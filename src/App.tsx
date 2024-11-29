@@ -1,17 +1,12 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import SignIn from "pages/auth/signIn/SignIn";
-import SignUp from "pages/auth/signUp/SignUp";
-import { Provider } from "react-redux";
-import { store } from "store";
+import { RouterProvider } from "react-router-dom";
+import router from "router";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <Provider store={store}>
-      <SignUp></SignUp>
-    </Provider>
+    <>
+      <RouterProvider router={router}></RouterProvider>
+    </>
   );
-}
+};
 
 export default App;

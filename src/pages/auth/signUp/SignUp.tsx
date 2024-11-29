@@ -1,6 +1,7 @@
 import { useSignUpMutation } from "store/api/endpoints/auth";
 import { SignUpType } from "types/auth.type";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
   const [signUp, { isLoading, error }] = useSignUpMutation();
@@ -113,6 +114,15 @@ const SignUp = () => {
           </button>
         </form>
         {error && <p className="text-red-500 mt-2">{(error as any).message}</p>}
+        <div className="flex gap-1">
+          <p>Already have an account? </p>
+          <Link
+            to="/auth/sign-in"
+            className="block text-blue-600 hover:underline"
+          >
+            Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );
