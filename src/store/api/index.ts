@@ -12,13 +12,6 @@ export const api = createApi({
         headers.set("authorization", `Bearer ${token}`);
       }
 
-      const csrfToken = document.head.querySelector(
-        'meta[name="csrf-token"]'
-      ) as HTMLMetaElement;
-      if (csrfToken) {
-        headers.set("X-CSRF-TOKEN", csrfToken.content);
-      }
-
       return headers;
     },
   }),
