@@ -20,7 +20,7 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
       navigate("/auth/sign-in");
       dispatch(removeUserInfo());
     } else {
-      dispatch(saveUserInfo({ token: getCookie("access_token") }));
+      dispatch(saveUserInfo({ access_token: getCookie("access_token") }));
       // Redirect Back Home is Auth Layout
       if (
         location.pathname === "/auth/sign-in" ||

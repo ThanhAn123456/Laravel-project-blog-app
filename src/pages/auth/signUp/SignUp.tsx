@@ -1,10 +1,14 @@
 import { useSignUpMutation } from "store/api/endpoints/auth";
 import { SignUpType } from "types/auth.type";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 const SignUp = () => {
-  const [signUp, { isLoading, error }] = useSignUpMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [signUp, { data, isLoading, error, isSuccess }] = useSignUpMutation();
   const [formData, setFormData] = useState<SignUpType>({
     name: "",
     email: "",
@@ -20,17 +24,39 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.password_confirmation) {
-      alert("Passwords do not match");
+      toast("Passwords do not match", {
+        autoClose: 2000,
+        type: "warning",
+      });
       return;
     }
+
     try {
-      console.log(formData);
-      signUp(formData);
-      // Redirect or show success message
+      await signUp(formData);
     } catch (error) {
-      console.error("Error signing up:", error);
+      alert("Sign In Error.");
+      console.error("Sign In Error:", error);
     }
   };
+
+  useEffect(() => {
+    if (!data) return; // Bỏ qua nếu không có dữ liệu
+
+    // Lưu thông tin người dùng nếu thành công
+    if (isSuccess && data.status === 201) {
+      navigate("/auth/sign-in");
+    }
+
+    // Hiển thị thông báo toast
+    toast(data?.message, {
+      autoClose: 2000,
+      type: isSuccess
+        ? data.status === "201"
+          ? "success"
+          : "warning"
+        : "error",
+    });
+  }, [data, dispatch, navigate, isSuccess]);
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen">

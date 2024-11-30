@@ -8,7 +8,7 @@ import { saveUserInfo } from "store/slice/auth";
 import { SignInType } from "types/auth.type";
 
 const SignIn = () => {
-  const [signIn, { data, isLoading }] = useSignInMutation();
+  const [signIn, { data, isLoading, isSuccess }] = useSignInMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignInType>({
@@ -34,25 +34,24 @@ const SignIn = () => {
   useEffect(() => {
     if (!data) return; // Bỏ qua nếu không có dữ liệu
 
-    const isSuccess = data?.isSuccess;
+    console.log("data: ", data);
 
-    console.log(isSuccess);
     // Lưu thông tin người dùng nếu thành công
-    if (isSuccess) {
+    if (isSuccess && data.status === 200) {
       dispatch(
         saveUserInfo({
-          token: data?.data?.access_token,
+          access_token: data?.data?.access_token,
         })
       );
       navigate("/");
     }
 
     // Hiển thị thông báo toast
-    toast(isSuccess ? "Login Successfully." : "Authentication Failed.", {
-      autoClose: 2000, // Tương ứng với `duration`
-      type: isSuccess ? "success" : "error", // Tương ứng với `variant`
+    toast(data?.message, {
+      autoClose: 2000,
+      type: isSuccess ? (data.status === 200 ? "success" : "warning") : "error",
     });
-  }, [data, dispatch, navigate]);
+  }, [data, dispatch, navigate, isSuccess]);
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen">
