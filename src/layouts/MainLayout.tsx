@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { AuthGuard } from "components";
+import { AuthGuard, SideBar } from "components";
 import { useSelector } from "react-redux";
 
 const MainLayout: React.FC = () => {
@@ -9,7 +9,7 @@ const MainLayout: React.FC = () => {
   return (
     <AuthGuard>
       <div className="flex">
-        <div className=" hidden lg:block">{/* <SideBar /> */}</div>
+        <div className=" hidden lg:block">{<SideBar />}</div>
         <main
           className={
             " w-full lg:px-5 px-2 " + (isSideBarOpen ? "lg:ms-60" : "lg:ms-14")
