@@ -8,92 +8,102 @@ import {
 } from "@tabler/icons-react";
 import { FollowModal } from "components";
 import React, { useState } from "react";
-import { useGetUserQuery } from "../../store/api/endpoints/user";
+// import { useGetUserQuery } from "../../store/api/endpoints/user";
+import {
+  useGetFollowersCountQuery,
+  useGetFollowingCountQuery,
+} from "../../store/api/endpoints/follow";
 
 interface Post {
   id: number;
   image: string;
   caption: string;
 }
+const followers = [
+  {
+    username: "User 1",
+    avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+    isFollowing: true,
+  },
+  {
+    username: "User 2",
+    avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
+    isFollowing: false,
+  },
+  {
+    username: "User 3",
+    avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+    isFollowing: true,
+  },
+];
+
+const following = [
+  {
+    username: "User A",
+    avatarUrl: "https://randomuser.me/api/portraits/men/4.jpg",
+    isFollowing: true,
+  },
+  {
+    username: "User B",
+    avatarUrl: "https://randomuser.me/api/portraits/women/5.jpg",
+    isFollowing: false,
+  },
+  {
+    username: "User C",
+    avatarUrl: "https://randomuser.me/api/portraits/men/6.jpg",
+    isFollowing: true,
+  },
+];
+
+const posts: Post[] = [
+  {
+    id: 1,
+    image:
+      "https://instagram.fdad1-1.fna.fbcdn.net/v/t39.30808-6/468740485_1219758792843992_5867628167050463389_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMzY1eDEzNjUuc2RyLmYzMDgwOC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fdad1-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=uGNzHu2KNpkQ7kNvgGnQOLg&_nc_gid=0087a1988ba5498493683a781ca3cb47&edm=AP4sbd4AAAAA&ccb=7-5&ig_cache_key=MzUxMjE0MzU3ODA3NDA0NjgyNw%3D%3D.3-ccb7-5&oh=00_AYCqnv2LkoXjPMk0SddmKm9RqJSP2MSlodKvqTqhxAQi2A&oe=67531722&_nc_sid=7a9f4b",
+    caption: "Post 1",
+  },
+  {
+    id: 2,
+    image:
+      "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468834825_1279460653380352_454001235547791474_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rmJf8HKCFSUQ7kNvgHA2pqh&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=A2_XArlWjVOPubSUNNmhhAv&oh=00_AYAoCNVQY-JCkUE1T9N-wy_X8tobX168RhNheRfePxRWjg&oe=67534A5F",
+    caption: "Post 2",
+  },
+  {
+    id: 3,
+    image:
+      "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468725512_539468055649287_4380880226724341098_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=TOCQ6AumjZoQ7kNvgHqqgiK&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=ATO2W9ubkwqEEYkzF85aCor&oh=00_AYCEZKqrZPMUwGJ9hdwQrNFDKzcoc2kp0zAjESRJnzKEyA&oe=6753258B",
+    caption: "Post 3",
+  },
+  { id: 4, image: "https://via.placeholder.com/300", caption: "Post 4" },
+];
+const saved: Post[] = [];
 
 const Profile: React.FC = () => {
   const [isFollowersOpen, setIsFollowersOpen] = useState(false);
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
 
-  const { data, isLoading, isSuccess } = useGetUserQuery({});
+  const userId = 11;
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  // if (isSuccess && data) {
-  const { avatarUrl, username, postsCount, followersCount, followingCount } =
-    data;
-  // }
-
-  const followers = [
-    {
-      username: "User 1",
-      avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-      isFollowing: true,
-    },
-    {
-      username: "User 2",
-      avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-      isFollowing: false,
-    },
-    {
-      username: "User 3",
-      avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-      isFollowing: true,
-    },
-  ];
-
-  const following = [
-    {
-      username: "User A",
-      avatarUrl: "https://randomuser.me/api/portraits/men/4.jpg",
-      isFollowing: true,
-    },
-    {
-      username: "User B",
-      avatarUrl: "https://randomuser.me/api/portraits/women/5.jpg",
-      isFollowing: false,
-    },
-    {
-      username: "User C",
-      avatarUrl: "https://randomuser.me/api/portraits/men/6.jpg",
-      isFollowing: true,
-    },
-  ];
+  const {
+    data: followersData,
+    isLoading: followersLoading,
+    isSuccess: followersSuccess,
+  } = useGetFollowersCountQuery({});
+  const {
+    data: followingData,
+    isLoading: followingLoading,
+    isSuccess: followingSuccess,
+  } = useGetFollowingCountQuery(userId);
 
   const toggleFollowersModal = () => setIsFollowersOpen(!isFollowersOpen);
   const toggleFollowingModal = () => setIsFollowingOpen(!isFollowingOpen);
 
-  const posts: Post[] = [
-    {
-      id: 1,
-      image:
-        "https://instagram.fdad1-1.fna.fbcdn.net/v/t39.30808-6/468740485_1219758792843992_5867628167050463389_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMzY1eDEzNjUuc2RyLmYzMDgwOC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fdad1-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=uGNzHu2KNpkQ7kNvgGnQOLg&_nc_gid=0087a1988ba5498493683a781ca3cb47&edm=AP4sbd4AAAAA&ccb=7-5&ig_cache_key=MzUxMjE0MzU3ODA3NDA0NjgyNw%3D%3D.3-ccb7-5&oh=00_AYCqnv2LkoXjPMk0SddmKm9RqJSP2MSlodKvqTqhxAQi2A&oe=67531722&_nc_sid=7a9f4b",
-      caption: "Post 1",
-    },
-    {
-      id: 2,
-      image:
-        "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468834825_1279460653380352_454001235547791474_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rmJf8HKCFSUQ7kNvgHA2pqh&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=A2_XArlWjVOPubSUNNmhhAv&oh=00_AYAoCNVQY-JCkUE1T9N-wy_X8tobX168RhNheRfePxRWjg&oe=67534A5F",
-      caption: "Post 2",
-    },
-    {
-      id: 3,
-      image:
-        "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468725512_539468055649287_4380880226724341098_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=TOCQ6AumjZoQ7kNvgHqqgiK&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=ATO2W9ubkwqEEYkzF85aCor&oh=00_AYCEZKqrZPMUwGJ9hdwQrNFDKzcoc2kp0zAjESRJnzKEyA&oe=6753258B",
-      caption: "Post 3",
-    },
-    { id: 4, image: "https://via.placeholder.com/300", caption: "Post 4" },
-  ];
-  const saved: Post[] = [];
+  console.log(followersData);
+  // console.log(followingData);
 
+  const followersCount = followersData?.count || 0;
+  const followingCount = followingData?.count || 0;
   return (
     <div className="w-[975px] mx-auto px-5 py-8">
       <div className="flex items-start gap-x-8 bg-white mb-8">
@@ -103,8 +113,8 @@ const Profile: React.FC = () => {
           </div>
           <div className="absolute top-[20px] left-[45%] w-1 h-1 bg-white border border-transparent shadow rounded-xl"></div>
           <img
-            src={avatarUrl}
-            // src="https://via.placeholder.com/150"
+            // src={avatarUrl}
+            src="https://via.placeholder.com/150"
             // alt={username}
             className="w-[150px] h-[150px] rounded-full"
           />
@@ -112,7 +122,7 @@ const Profile: React.FC = () => {
         <div className="flex flex-col flex-grow justify-start gap-y-6">
           <div className="flex flex-row items-center">
             <h2 className="text-lg font-sans font-normal mr-4">
-              {username}
+              {/* {username} */}
               thien_antan.dana
             </h2>
             <div className="px-2">
@@ -132,7 +142,7 @@ const Profile: React.FC = () => {
           </div>
           <div className="mt-1 text-black text-base flex gap-x-6">
             <span className="py-1 mr-2">
-              <strong>{postsCount} 0 </strong>bài viết
+              {/* <strong>{postsCount} 0 </strong>bài viết */}
             </span>
             <button
               onClick={toggleFollowersModal}

@@ -6,8 +6,12 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://127.0.0.1:8000/api",
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers,  { getState }) => {
+      const state: any = getState();
+      const token = state.auth.access_token; 
       headers.set("Content-Type", "application/json");
+      console.log("token mới ghi:", token);
+      
 
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
@@ -16,7 +20,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Category", "Product", "User"],
+  tagTypes: ["Category", "Product", "User", "Follow"],
   endpoints: () => ({}),
 });
 
