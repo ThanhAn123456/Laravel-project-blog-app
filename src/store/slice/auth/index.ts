@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setCookie, removeCookie } from "typescript-cookie";
+import { setCookie, removeCookie, getCookie } from "typescript-cookie";
 
 export interface InitialStateType {
   access_token: string;
 }
 
 const initialState: InitialStateType = {
-  access_token: "",
+  access_token: getCookie("access_token") || "",
 };
 
 export const authSlice = createSlice({
@@ -25,6 +25,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const token = (state: InitialStateType) => state.access_token;
 export const { saveUserInfo, removeUserInfo } = authSlice.actions;
 export default authSlice.reducer;

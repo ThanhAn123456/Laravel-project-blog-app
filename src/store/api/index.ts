@@ -1,21 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { token } from "../../store/slice/auth";
 
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://127.0.0.1:8000/api",
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers, { getState }) => {
+      const state: any = getState(); // Lấy toàn bộ state từ Redux store
+      const accessToken = state.auth.access_token;
+
       headers.set("Content-Type", "application/json");
 
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
+      if (accessToken) {
+        headers.set("authorization", `Bearer ${accessToken}`);
       }
 
       return headers;
     },
   }),
-  tagTypes: ["Category", "Product", "User"],
+  tagTypes: ["Category", "Post", "User"],
   endpoints: () => ({}),
 });
 
