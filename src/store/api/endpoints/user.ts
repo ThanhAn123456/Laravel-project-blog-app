@@ -2,9 +2,9 @@ import { api } from "..";
 
 const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getAllPost: builder.query({
+    getUser: builder.query({
       query: (page = 1) => ({
-        url: `/posts`,
+        url: `/user`,
         method: "GET",
         params: {
           page: page,
@@ -12,9 +12,9 @@ const postApi = api.injectEndpoints({
       }),
       providesTags: ["Post"],
     }),
-    getPost: builder.query({
-      query: (id) => ({
-        url: `/posts/${id}`,
+    getUserById: builder.query({
+      query: (userId) => ({
+        url: `/user/${userId}`,
         method: "GET",
       }),
       providesTags: ["Post"],
@@ -22,4 +22,4 @@ const postApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetAllPostQuery, useGetPostQuery } = postApi;
+export const { useGetUserQuery, useGetUserByIdQuery } = postApi;

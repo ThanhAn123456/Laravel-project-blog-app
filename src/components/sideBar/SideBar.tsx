@@ -5,9 +5,17 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { removeUserInfo } from "store/slice/auth";
 import { NavLink } from "react-router-dom";
 
 const SideBar: React.FC = () => {
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(removeUserInfo());
+  };
+
   return (
     <aside className="fixed top-0 left-0 h-full bg-white shadow-lg w-60 lg:w-60 z-50">
       <div className="flex flex-col h-full">
@@ -63,7 +71,10 @@ const SideBar: React.FC = () => {
 
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-200">
-          <button className="w-full text-left text-gray-700 hover:text-red-600  flex gap-2">
+          <button
+            className="w-full text-left text-gray-700 hover:text-red-600  flex gap-2"
+            onClick={() => handleClick()}
+          >
             <IconLogout></IconLogout>
             <p>Logout</p>
           </button>
