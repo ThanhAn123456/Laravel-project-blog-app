@@ -34,13 +34,12 @@ const UserItem: React.FC<UserItemProps> = ({
       <button
         onClick={onToggleFollow}
         className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors duration-300 ${
-          // isFollowing
-          // ?
-          "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
-          // : "bg-[#0095f6] text-white hover:bg-blue-600"
+          type === "followers"
+            ? "bg-[#0095f6] text-white hover:bg-blue-600"
+            : "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
         }`}
       >
-        {type === "followers" ? "Xoá" : "Đang theo dõi"}
+        {type === "followers" ? "Theo dõi" : "Đang theo dõi"}
       </button>
     </div>
   );

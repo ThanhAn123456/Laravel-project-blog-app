@@ -15,6 +15,7 @@ import { PostCardType } from "types/PostCard.type";
 import CommentCard from "./CommentCard";
 import { useGetMediaByPostIdQuery } from "store/api/endpoints/media";
 import ImageSlider from "./ImageSlider";
+import { useNavigate } from "react-router-dom";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const likes = 1;
@@ -65,10 +66,19 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleNavigateToProfile = () => {
+    navigate(`/profile/${user_id}`);
+  };
+
   return (
     <div className="bg-white border rounded-lg shadow-sm mb-4 max-w-xl mx-auto py-2">
       {/* Header */}
-      <div className="flex items-center px-4 py-3">
+      <div
+        className="flex items-center px-4 py-3 cursor-pointer"
+        onClick={handleNavigateToProfile}
+      >
         <img
           src={userData?.data.avatar}
           alt="avatar"

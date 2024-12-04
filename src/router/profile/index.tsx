@@ -13,6 +13,10 @@ const ProfileRoutes: RouteObject[] = [
         path: "",
         element: <Profile />,
       },
+      {
+        path: ":userId",
+        element: <Profile />,
+      },
     ],
   },
 ];
