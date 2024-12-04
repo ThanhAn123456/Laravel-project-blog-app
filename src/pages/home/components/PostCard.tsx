@@ -13,11 +13,11 @@ import { useGetUserByIdQuery } from "store/api/endpoints/user";
 import { CommentType } from "types/comment.type";
 import { PostCardType } from "types/PostCard.type";
 import CommentCard from "./CommentCard";
+import { useGetMediaByPostIdQuery } from "store/api/endpoints/media";
+import ImageSlider from "./ImageSlider";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const likes = 1;
-  const file_url =
-    "https://plus.unsplash.com/premium_photo-1730475800647-cacc33d43e55?q=80&w=1975&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   const pageSize = 4;
   const page = 1;
   const postId = id;
@@ -26,6 +26,8 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
 
   const { data: userData } = useGetUserByIdQuery(user_id);
+  const { data: mediaData } = useGetMediaByPostIdQuery(id);
+  console.log("mediaData?.data:", mediaData?.data);
   const [CreateComment] = useCreateCommentMutation();
   const [fetchComments, { data: commentsData, isLoading: isFetching }] =
     useLazyGetCommentByIdQuery();
@@ -82,13 +84,7 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       <div className="px-4 py-2 text-sm">{content}</div>
 
       {/* Post Image */}
-      <div>
-        <img
-          src={file_url}
-          alt="post"
-          className="w-full object-cover max-h-[500px]"
-        />
-      </div>
+      <ImageSlider mediaData={mediaData?.data || []} />
 
       {/* Action Buttons */}
       <div className="flex items-center justify-between px-4 py-2">
