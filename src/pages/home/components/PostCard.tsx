@@ -4,7 +4,7 @@ import {
   IconThumbUp,
   IconThumbUpFilled,
 } from "@tabler/icons-react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   useCreateCommentMutation,
   useLazyGetCommentByIdQuery,
@@ -15,22 +15,31 @@ import { PostCardType } from "types/PostCard.type";
 import CommentCard from "./CommentCard";
 import { useGetMediaByPostIdQuery } from "store/api/endpoints/media";
 import ImageSlider from "./ImageSlider";
+import {
+  useCreateLikeMutation,
+  useDeleteLikeMutation,
+  useGetIsLikedByPostIdQuery,
+  useGetLikeByPostIdQuery,
+} from "store/api/endpoints/like";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
-  const likes = 1;
   const pageSize = 8;
   const postId = id;
 
   const [page, setPage] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(likes);
+  const [likeCount, setLikeCount] = useState(0);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [isCommentCreated, setIsCommentCreated] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
 
   const { data: userData } = useGetUserByIdQuery(user_id);
-  const { data: mediaData } = useGetMediaByPostIdQuery(id);
-  let [CreateComment] = useCreateCommentMutation();
+  const { data: mediaData } = useGetMediaByPostIdQuery(postId);
+  const { data: likeData } = useGetLikeByPostIdQuery(postId);
+  const { data: isLikedData } = useGetIsLikedByPostIdQuery(postId);
+  const [CreateComment] = useCreateCommentMutation();
+  const [createLike] = useCreateLikeMutation();
+  const [deleteLike] = useDeleteLikeMutation();
   const [fetchComments, { data: commentsData, isLoading: isFetching }] =
     useLazyGetCommentByIdQuery();
 
@@ -58,9 +67,20 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     }
   };
 
-  const toggleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const toggleLike = async () => {
+    try {
+      if (isLiked) {
+        await deleteLike({ postId }).unwrap();
+        setIsLiked(false);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await createLike({ postId }).unwrap();
+        setIsLiked(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+    }
   };
 
   const toggleComments = () => {
@@ -86,7 +106,7 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     }
   }, [commentsData, isFetching, page, fetchComments, postId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isCommentCreated && commentsData && commentsData.data.data) {
       setComments((prevComments) => [
         ...prevComments,
@@ -98,6 +118,18 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       setIsCommentCreated(false);
     }
   }, [commentsData]);
+
+  useEffect(() => {
+    if (likeData) {
+      setLikeCount(likeData?.data.count); // Khởi tạo likeCount
+    }
+  }, [likeData]);
+
+  useEffect(() => {
+    if (isLikedData) {
+      setIsLiked(isLikedData?.data.isLiked);
+    }
+  }, [isLikedData]);
 
   return (
     <div className="bg-white border rounded-lg shadow-sm mb-4 max-w-xl mx-auto py-2">

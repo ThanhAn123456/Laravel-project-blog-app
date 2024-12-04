@@ -51,7 +51,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
               <img
                 src={media.file_url}
                 alt={`media-${media.id}`}
-                className="slider-image object-contain max-h-full max-w-full  rounded-md"
+                className="slider-image w-full h-full object-cover rounded-md"
                 onLoad={() => setImagesLoaded((prev) => prev + 1)}
               />
             </div>
