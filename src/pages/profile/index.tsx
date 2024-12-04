@@ -23,30 +23,41 @@ import {
   useUpdateUserQuery,
 } from "../../store/api/endpoints/user";
 
-import { useGetPostQuery } from "../../store/api/endpoints/post";
+import {
+  useGetPostQuery,
+  useGetPostByUserIdQuery,
+  useGetPostCountByUserIdQuery,
+} from "../../store/api/endpoints/post";
 
 interface Post {
   id: number;
+  user_id: number;
+  title: string;
+  content: string;
   image: string;
-  caption: string;
 }
-const followers = [
-  {
-    username: "User 1",
-    avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-    isFollowing: true,
-  },
-  {
-    username: "User 2",
-    avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-    isFollowing: false,
-  },
-  {
-    username: "User 3",
-    avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-    isFollowing: true,
-  },
-];
+
+interface PostListResponse {
+  data: Post[];
+}
+
+// const followers = [
+//   {
+//     username: "User 1",
+//     avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
+//     isFollowing: true,
+//   },
+//   {
+//     username: "User 2",
+//     avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
+//     isFollowing: false,
+//   },
+//   {
+//     username: "User 3",
+//     avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
+//     isFollowing: true,
+//   },
+// ];
 
 const following = [
   {
@@ -66,27 +77,27 @@ const following = [
   },
 ];
 
-const posts: Post[] = [
-  {
-    id: 1,
-    image:
-      "https://instagram.fdad1-1.fna.fbcdn.net/v/t39.30808-6/468740485_1219758792843992_5867628167050463389_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMzY1eDEzNjUuc2RyLmYzMDgwOC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fdad1-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=uGNzHu2KNpkQ7kNvgGnQOLg&_nc_gid=0087a1988ba5498493683a781ca3cb47&edm=AP4sbd4AAAAA&ccb=7-5&ig_cache_key=MzUxMjE0MzU3ODA3NDA0NjgyNw%3D%3D.3-ccb7-5&oh=00_AYCqnv2LkoXjPMk0SddmKm9RqJSP2MSlodKvqTqhxAQi2A&oe=67531722&_nc_sid=7a9f4b",
-    caption: "Post 1",
-  },
-  {
-    id: 2,
-    image:
-      "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468834825_1279460653380352_454001235547791474_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rmJf8HKCFSUQ7kNvgHA2pqh&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=A2_XArlWjVOPubSUNNmhhAv&oh=00_AYAoCNVQY-JCkUE1T9N-wy_X8tobX168RhNheRfePxRWjg&oe=67534A5F",
-    caption: "Post 2",
-  },
-  {
-    id: 3,
-    image:
-      "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468725512_539468055649287_4380880226724341098_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=TOCQ6AumjZoQ7kNvgHqqgiK&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=ATO2W9ubkwqEEYkzF85aCor&oh=00_AYCEZKqrZPMUwGJ9hdwQrNFDKzcoc2kp0zAjESRJnzKEyA&oe=6753258B",
-    caption: "Post 3",
-  },
-  { id: 4, image: "https://via.placeholder.com/300", caption: "Post 4" },
-];
+// const posts: Post[] = [
+//   {
+//     id: 1,
+//     image:
+//       "https://instagram.fdad1-1.fna.fbcdn.net/v/t39.30808-6/468740485_1219758792843992_5867628167050463389_n.jpg?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMzY1eDEzNjUuc2RyLmYzMDgwOC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fdad1-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=uGNzHu2KNpkQ7kNvgGnQOLg&_nc_gid=0087a1988ba5498493683a781ca3cb47&edm=AP4sbd4AAAAA&ccb=7-5&ig_cache_key=MzUxMjE0MzU3ODA3NDA0NjgyNw%3D%3D.3-ccb7-5&oh=00_AYCqnv2LkoXjPMk0SddmKm9RqJSP2MSlodKvqTqhxAQi2A&oe=67531722&_nc_sid=7a9f4b",
+//     caption: "Post 1",
+//   },
+//   {
+//     id: 2,
+//     image:
+//       "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468834825_1279460653380352_454001235547791474_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=rmJf8HKCFSUQ7kNvgHA2pqh&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=A2_XArlWjVOPubSUNNmhhAv&oh=00_AYAoCNVQY-JCkUE1T9N-wy_X8tobX168RhNheRfePxRWjg&oe=67534A5F",
+//     caption: "Post 2",
+//   },
+//   {
+//     id: 3,
+//     image:
+//       "https://scontent.fdad1-4.fna.fbcdn.net/v/t39.30808-6/468725512_539468055649287_4380880226724341098_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=TOCQ6AumjZoQ7kNvgHqqgiK&_nc_zt=23&_nc_ht=scontent.fdad1-4.fna&_nc_gid=ATO2W9ubkwqEEYkzF85aCor&oh=00_AYCEZKqrZPMUwGJ9hdwQrNFDKzcoc2kp0zAjESRJnzKEyA&oe=6753258B",
+//     caption: "Post 3",
+//   },
+//   { id: 4, image: "https://via.placeholder.com/300", caption: "Post 4" },
+// ];
 const saved: Post[] = [];
 
 const Profile: React.FC = () => {
@@ -102,7 +113,7 @@ const Profile: React.FC = () => {
     isSuccess: isUserSuccess,
   } = useGetUserQuery({});
 
-  const userId = user.id;
+  const userId = user.data.id;
 
   const {
     data: followersCountData = { data: { count: 0 } },
@@ -115,6 +126,32 @@ const Profile: React.FC = () => {
     isLoading: isFollowingCountLoading,
     isSuccess: isFollowingCountSuccess,
   } = useGetFollowingCountQuery(userId);
+
+  const {
+    data: followersList = { data: [] },
+    isLoading: isFollowersListLoading,
+    isSuccess: isFollowersListSuccess,
+  } = useGetFollowersQuery(userId);
+
+  const {
+    data: followingList = { data: [] },
+    isLoading: isFollowingListLoading,
+    isSuccess: isFollowingListSuccess,
+  } = useGetFollowingQuery(userId);
+
+  const {
+    data: postCountData = { data: { count: 0 } },
+    isLoading: isPostCountLoading,
+    isSuccess: isPostCountSuccess,
+  } = useGetPostCountByUserIdQuery(userId);
+
+  const {
+    data: postList = { data: [] },
+    isLoading: isPostListLoading,
+    isSuccess: isPostListSuccess,
+  } = useGetPostByUserIdQuery(userId);
+
+  console.log("post list", postList);
 
   if (isFollowersCountLoading) {
     return <div>Loading...</div>;
@@ -129,25 +166,6 @@ const Profile: React.FC = () => {
   if (isFollowingCountSuccess) {
     followingCount = followingCountData.data?.count ?? 0;
   }
-  // const {
-  //   data: followersList = { data: [] },
-  //   isLoading: isFollowersListLoading,
-  //   isSuccess: isFollowersListSuccess,
-  // } = useGetFollowersQuery(userId);
-
-  // const {
-  //   data: followingList = { data: [] },
-  //   isLoading: isFollowingListLoading,
-  //   isSuccess: isFollowingListSuccess,
-  // } = useGetFollowingQuery(userId);
-
-  // const {
-  //   data: postList = { data: [] },
-  //   isLoading: isPostListLoading,
-  //   isSuccess: isPostListSuccess,
-  // } = useGetPostQuery(userId);
-
-  // console.log(postList);
 
   // Modal toggle functions
   const toggleFollowersModal = () => setIsFollowersOpen((prev) => !prev);
@@ -162,7 +180,7 @@ const Profile: React.FC = () => {
   // const following = followingList.data || [];
 
   return (
-    <div className="w-[975px] mx-auto px-5 py-8">
+    <div className="max-w-[975px] w-full mx-auto px-5 py-8">
       <div className="flex items-start gap-x-8 bg-white mb-8">
         <div className="relative flex flex-col items-center justify-center w-72">
           <div className="absolute -top-5 p-2 bg-white border border-transparent shadow rounded-xl after:content-[''] after:w-3 after:h-3 after:absolute after:top-6 after:bg-white after:border after:rounded-xl after:border-transparent">
@@ -170,15 +188,15 @@ const Profile: React.FC = () => {
           </div>
           <div className="absolute top-[20px] left-[45%] w-1 h-1 bg-white border border-transparent shadow rounded-xl"></div>
           <img
-            src={user?.avatar || defaultAvatar}
-            alt={user?.username || "Avatar"}
+            src={user?.data.avatar || defaultAvatar}
+            alt={user?.data.username || "Avatar"}
             className="w-[150px] h-[150px] rounded-full"
           />
         </div>
         <div className="flex flex-col flex-grow justify-start gap-y-6">
           <div className="flex flex-row items-center">
             <h2 className="text-lg font-serif font-semibold mr-6">
-              {user.name}
+              {user.data.name}
             </h2>
             <div className="px-2">
               <a
@@ -197,7 +215,7 @@ const Profile: React.FC = () => {
           </div>
           <div className="mt-1 text-black text-base flex gap-x-6">
             <span className="py-1 mr-2">
-              {/* <strong>{postsCount} 0 </strong>bài viết */}
+              <strong>{postCountData.data.count || 0} </strong>bài viết
             </span>
             <button
               onClick={toggleFollowersModal}
@@ -217,14 +235,14 @@ const Profile: React.FC = () => {
           <FollowModal
             isOpen={isFollowersOpen}
             onClose={toggleFollowersModal}
-            list={followers}
+            list={followersList.data}
             type="followers"
           />
 
           <FollowModal
             isOpen={isFollowingOpen}
             onClose={toggleFollowingModal}
-            list={following}
+            list={followingList.data}
             type="following"
           />
         </div>
@@ -264,11 +282,11 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white mt-2">
+        {/* <div className="bg-white mt-2">
           {activeTab === "posts" ? (
-            posts.length > 0 ? (
+            postList.data.length > 0 ? (
               <div className="grid grid-cols-3 gap-1">
-                {posts.map((post, index) => (
+                {postList.data.map((post, index) => (
                   <div key={index} className="relative group cursor-pointer">
                     <img
                       key={index}
@@ -298,8 +316,8 @@ const Profile: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center mt-8 mx-8">
+              <div className="flex items-center justify-center min-h-[500px]">
+                <div className="flex flex-col items-start justify-center mt-8 mx-8">
                   <div className="relative w-64 h-32">
                     <IconCircle
                       className="absolute inset-0 m-auto"
@@ -313,7 +331,7 @@ const Profile: React.FC = () => {
                     />
                   </div>
 
-                  <p className="text-3xl font-extrabold text-black font-sans text-center mt-0">
+                  <p className="text-2xl font-extrabold text-black font-sans text-center mt-0">
                     Chưa có bài viết
                   </p>
                 </div>
@@ -331,9 +349,23 @@ const Profile: React.FC = () => {
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500">Không có mục đã lưu nào</p>
+            <div className="flex items-start justify-center min-h-[400px]">
+              <div className="flex flex-col items-center justify-center mt-8 mx-8">
+                <div className="relative w-64 h-32">
+                  <IconBookmark
+                    className="absolute inset-0 m-auto"
+                    stroke={1}
+                    size={58}
+                  />
+                </div>
+
+                <p className="text-2xl font-extrabold text-black font-sans text-center mt-0">
+                  Chưa có mục lưu nào
+                </p>
+              </div>
+            </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-// import { token } from "../../store/slice/auth";
 
 export const api = createApi({
   reducerPath: "api",
@@ -18,7 +17,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Category", "Product", "User", "Follow", "Post"],
+  tagTypes: ["Comment", "Post", "User", "Follow"],
   endpoints: () => ({}),
 });
 

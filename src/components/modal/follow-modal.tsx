@@ -3,9 +3,11 @@ import UserItem from "components/user/user-item";
 import { useState } from "react";
 
 interface User {
-  username: string;
-  avatarUrl: string;
-  isFollowing: boolean;
+  avatar: string;
+  name: string;
+  followed_id: string;
+  email: string;
+  role_id: string;
 }
 
 interface FollowModalProps {
@@ -30,9 +32,9 @@ const FollowModal: React.FC<FollowModalProps> = ({
     }
   };
 
-  // const filteredList = list.filter((user) =>
-  //   user.username.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  const filteredList = list.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (!isOpen) return null;
 
@@ -44,7 +46,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
       <div className="bg-white rounded-lg max-w-sm w-full relative h-[420px]">
         <div className="flex items-center flex-grow justify-center mb-4 pt-4">
           <h2 className="text-base text-center font-bold">
-            {type === "followers" ? "Người theo dõi" : "Đang theo dõi"}
+            {type === "followers" ? "Theo dõi" : "Đang theo dõi"}
           </h2>
           <button
             onClick={onClose}
@@ -76,18 +78,29 @@ const FollowModal: React.FC<FollowModalProps> = ({
         </div>
         <div className="overflow-y-auto max-h-96">
           <ul>
-            {/* {filteredList.map((user, index) => (
+            {filteredList.map((user, index) => (
               <li key={index} className="">
-                <UserItem
-                  avatarUrl={user.avatarUrl}
-                  username={user.username}
-                  isFollowing={user.isFollowing}
-                  onToggleFollow={() => {
-                    // Thêm logic toggle follow ở đây
-                  }}
-                />
+                {type === "followers" ? (
+                  <UserItem
+                    avatarUrl={user.avatar}
+                    username={user.name}
+                    type="followers"
+                    onToggleFollow={() => {
+                      // Thêm logic toggle follow ở đây
+                    }}
+                  />
+                ) : (
+                  <UserItem
+                    avatarUrl={user.avatar}
+                    username={user.name}
+                    type="following"
+                    onToggleFollow={() => {
+                      // Thêm logic toggle follow ở đây
+                    }}
+                  />
+                )}
               </li>
-            ))} */}
+            ))}
           </ul>
         </div>
       </div>

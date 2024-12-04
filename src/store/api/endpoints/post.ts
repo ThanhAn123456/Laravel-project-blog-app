@@ -3,9 +3,12 @@ import { api } from "..";
 const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAllPost: builder.query({
-      query: () => ({
-        url: "/posts",
+      query: (page = 1) => ({
+        url: `/posts`,
         method: "GET",
+        params: {
+          page: page,
+        },
       }),
       providesTags: ["Post"],
     }),
@@ -16,7 +19,21 @@ const postApi = api.injectEndpoints({
       }),
       providesTags: ["Post"],
     }),
+    getPostByUserId: builder.query({
+      query: (userId) => ({
+        url: `/posts/user/${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["Post"],
+    }),
+    getPostCountByUserId: builder.query({
+      query: (userId) => ({
+        url: `/posts/user/${userId}/count`,
+        method: "GET",
+      }),
+      providesTags: ["Post"],
+    }),
   }),
 });
 
-export const { useGetAllPostQuery, useGetPostQuery } = postApi;
+export const { useGetAllPostQuery, useGetPostQuery, useGetPostByUserIdQuery, useGetPostCountByUserIdQuery } = postApi;
