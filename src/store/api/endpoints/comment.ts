@@ -15,7 +15,6 @@ const commentApi = api.injectEndpoints({
         method: "POST",
         body: comment,
       }),
-      invalidatesTags: ["Comment"],
     }),
   }),
 });

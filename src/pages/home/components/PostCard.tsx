@@ -4,7 +4,7 @@ import {
   IconThumbUp,
   IconThumbUpFilled,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   useCreateCommentMutation,
   useLazyGetCommentByIdQuery,
@@ -18,17 +18,19 @@ import ImageSlider from "./ImageSlider";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const likes = 1;
-  const pageSize = 4;
-  const page = 1;
+  const pageSize = 8;
   const postId = id;
+
+  const [page, setPage] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [isCommentCreated, setIsCommentCreated] = useState(false);
+  const [comments, setComments] = useState<CommentType[]>([]);
 
   const { data: userData } = useGetUserByIdQuery(user_id);
   const { data: mediaData } = useGetMediaByPostIdQuery(id);
-  console.log("mediaData?.data:", mediaData?.data);
-  const [CreateComment] = useCreateCommentMutation();
+  let [CreateComment] = useCreateCommentMutation();
   const [fetchComments, { data: commentsData, isLoading: isFetching }] =
     useLazyGetCommentByIdQuery();
 
@@ -45,7 +47,11 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     e.preventDefault();
     try {
       await CreateComment({ postId, comment: formData });
+      setIsCommentCreated(true);
       setFormData({ content: "" });
+      for (let i = 1; i <= page; i++) {
+        await fetchComments({ postId, page: i, page_size: pageSize });
+      }
     } catch (error: any) {
       alert("Login failed. Please check your credentials.");
       console.error("Sign In Error:", error);
@@ -64,6 +70,34 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       fetchComments({ postId, page, page_size: pageSize });
     }
   };
+
+  // Load next page of comments when "See More" is clicked
+  const loadMoreComments = useCallback(() => {
+    if (
+      commentsData &&
+      !isFetching &&
+      page < commentsData?.data.meta.last_page
+    ) {
+      setPage((prevPage) => {
+        const newPage = prevPage + 1;
+        fetchComments({ postId, page: newPage, page_size: pageSize });
+        return newPage;
+      });
+    }
+  }, [commentsData, isFetching, page, fetchComments, postId]);
+
+  React.useEffect(() => {
+    if (!isCommentCreated && commentsData && commentsData.data.data) {
+      setComments((prevComments) => [
+        ...prevComments,
+        ...commentsData.data.data,
+      ]);
+    }
+    if (isCommentCreated && commentsData && commentsData.data.data) {
+      setComments(() => [...commentsData.data.data]);
+      setIsCommentCreated(false);
+    }
+  }, [commentsData]);
 
   return (
     <div className="bg-white border rounded-lg shadow-sm mb-4 max-w-xl mx-auto py-2">
@@ -109,9 +143,21 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       {/* Comments Section */}
       {isCommentOpen && (
         <div className="mt-3 px-4 rounded-lg">
-          {commentsData?.data.map((comment: any, index: any) => (
-            <CommentCard key={comment.id} {...comment}></CommentCard>
-          ))}
+          <div className="overflow-y-auto max-h-[400px]">
+            {comments.map((comment: any, index: any) => (
+              <CommentCard key={comment.id} {...comment}></CommentCard>
+            ))}
+
+            {/* See More Comments Button */}
+            {commentsData && page < commentsData?.data.meta.last_page && (
+              <button
+                onClick={loadMoreComments}
+                className="mt-4 text-blue-500 hover:underline"
+              >
+                See More Comments
+              </button>
+            )}
+          </div>
 
           <form className="flex items-center mt-2" onSubmit={handleSubmit}>
             <input
