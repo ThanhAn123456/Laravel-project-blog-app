@@ -4,29 +4,28 @@ const followApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getFollowers: builder.query({
       query: (userId) => ({
-        url: `${userId}/followers`,
+        url: `followers/${userId}`,
         method: "GET",
       }),
       providesTags: ["Follow"],
     }),
     getFollowing: builder.query({
         query: (userId) => ({
-          url: `${userId}/following`,
+          url: `following/${userId}`,
           method: "GET",
         }),
         providesTags: ["Follow"],
     }),
     getFollowersCount: builder.query({
-        query: () => ({
-        //   url: `${userId}/followersCount`,
-          url: `/followersCount`,
+        query: (userId) => ({
+          url: `followersCount/${userId}`,
           method: "GET",
         }),
         providesTags: ["Follow"],
     }),
     getFollowingCount: builder.query({
         query: (userId) => ({
-        url: `${userId}/followingCount`,
+        url: `followingCount/${userId}`,
         method: "GET",
         }),
         providesTags: ["Follow"],

@@ -29,7 +29,7 @@ const SideBar: React.FC = () => {
                 }
               >
                 <IconHome></IconHome>
-                <p>Dashboard</p>
+                <p>Home</p>
               </NavLink>
             </li>
             <li>

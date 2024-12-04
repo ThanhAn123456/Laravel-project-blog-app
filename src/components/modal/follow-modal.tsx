@@ -30,9 +30,9 @@ const FollowModal: React.FC<FollowModalProps> = ({
     }
   };
 
-  const filteredList = list.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredList = list.filter((user) =>
+  //   user.username.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   if (!isOpen) return null;
 
@@ -76,7 +76,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
         </div>
         <div className="overflow-y-auto max-h-96">
           <ul>
-            {filteredList.map((user, index) => (
+            {/* {filteredList.map((user, index) => (
               <li key={index} className="">
                 <UserItem
                   avatarUrl={user.avatarUrl}
@@ -87,7 +87,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
                   }}
                 />
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
       </div>

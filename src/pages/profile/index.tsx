@@ -1,3 +1,4 @@
+import defaultAvatar from "../../assets/images/default_avatar.jpg";
 import {
   IconBookmark,
   IconCamera,
@@ -8,11 +9,21 @@ import {
 } from "@tabler/icons-react";
 import { FollowModal } from "components";
 import React, { useState } from "react";
-// import { useGetUserQuery } from "../../store/api/endpoints/user";
+
 import {
+  useGetFollowersQuery,
+  useGetFollowingQuery,
   useGetFollowersCountQuery,
   useGetFollowingCountQuery,
 } from "../../store/api/endpoints/follow";
+
+import {
+  useGetUserQuery,
+  useGetUserByIdQuery,
+  useUpdateUserQuery,
+} from "../../store/api/endpoints/user";
+
+import { useGetPostQuery } from "../../store/api/endpoints/post";
 
 interface Post {
   id: number;
@@ -83,27 +94,73 @@ const Profile: React.FC = () => {
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "saved">("posts");
 
-  const userId = 11;
+  let followersCount, followingCount;
 
   const {
-    data: followersData,
-    isLoading: followersLoading,
-    isSuccess: followersSuccess,
-  } = useGetFollowersCountQuery({});
+    data: user = { data: {} },
+    isLoading: isUserLoading,
+    isSuccess: isUserSuccess,
+  } = useGetUserQuery({});
+
+  const userId = user.id;
+
   const {
-    data: followingData,
-    isLoading: followingLoading,
-    isSuccess: followingSuccess,
+    data: followersCountData = { data: { count: 0 } },
+    isLoading: isFollowersCountLoading,
+    isSuccess: isFollowersCountSuccess,
+  } = useGetFollowersCountQuery(userId);
+
+  const {
+    data: followingCountData = { data: { count: 0 } },
+    isLoading: isFollowingCountLoading,
+    isSuccess: isFollowingCountSuccess,
   } = useGetFollowingCountQuery(userId);
 
-  const toggleFollowersModal = () => setIsFollowersOpen(!isFollowersOpen);
-  const toggleFollowingModal = () => setIsFollowingOpen(!isFollowingOpen);
+  if (isFollowersCountLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isFollowersCountSuccess) {
+    followersCount = followersCountData.data?.count ?? 0;
+  }
 
-  console.log(followersData);
-  // console.log(followingData);
+  if (isFollowingCountLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isFollowingCountSuccess) {
+    followingCount = followingCountData.data?.count ?? 0;
+  }
+  // const {
+  //   data: followersList = { data: [] },
+  //   isLoading: isFollowersListLoading,
+  //   isSuccess: isFollowersListSuccess,
+  // } = useGetFollowersQuery(userId);
 
-  const followersCount = followersData?.count || 0;
-  const followingCount = followingData?.count || 0;
+  // const {
+  //   data: followingList = { data: [] },
+  //   isLoading: isFollowingListLoading,
+  //   isSuccess: isFollowingListSuccess,
+  // } = useGetFollowingQuery(userId);
+
+  // const {
+  //   data: postList = { data: [] },
+  //   isLoading: isPostListLoading,
+  //   isSuccess: isPostListSuccess,
+  // } = useGetPostQuery(userId);
+
+  // console.log(postList);
+
+  // Modal toggle functions
+  const toggleFollowersModal = () => setIsFollowersOpen((prev) => !prev);
+  const toggleFollowingModal = () => setIsFollowingOpen((prev) => !prev);
+
+  // Ràng buộc giá trị để tránh null/undefined
+  // const followersCount = followersCountData.data?.count ?? 0;
+  // const followingCount = followingCountData.data?.count ?? 0;
+
+  // Tạo danh sách mặc định rỗng nếu undefined/null
+  // const followers = followersList.data || [];
+  // const following = followingList.data || [];
+
   return (
     <div className="w-[975px] mx-auto px-5 py-8">
       <div className="flex items-start gap-x-8 bg-white mb-8">
@@ -113,17 +170,15 @@ const Profile: React.FC = () => {
           </div>
           <div className="absolute top-[20px] left-[45%] w-1 h-1 bg-white border border-transparent shadow rounded-xl"></div>
           <img
-            // src={avatarUrl}
-            src="https://via.placeholder.com/150"
-            // alt={username}
+            src={user?.avatar || defaultAvatar}
+            alt={user?.username || "Avatar"}
             className="w-[150px] h-[150px] rounded-full"
           />
         </div>
         <div className="flex flex-col flex-grow justify-start gap-y-6">
           <div className="flex flex-row items-center">
-            <h2 className="text-lg font-sans font-normal mr-4">
-              {/* {username} */}
-              thien_antan.dana
+            <h2 className="text-lg font-serif font-semibold mr-6">
+              {user.name}
             </h2>
             <div className="px-2">
               <a
@@ -148,14 +203,14 @@ const Profile: React.FC = () => {
               onClick={toggleFollowersModal}
               className="text-black px-2 py-1 cursor-pointer"
             >
-              <strong>{followersCount} 1 </strong>người theo dõi
+              <strong>{followersCount} </strong>người theo dõi
             </button>
             <button
               onClick={toggleFollowingModal}
               className="text-black px-2 py-1 cursor-pointer"
             >
               Đang theo dõi
-              <strong>{followingCount} 4 </strong>người dùng
+              <strong> {followingCount} </strong>người dùng
             </button>
           </div>
 
