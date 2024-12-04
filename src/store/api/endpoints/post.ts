@@ -1,4 +1,5 @@
 import { api } from "..";
+import { CreatePostType } from "types/post.type";
 
 const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,7 +20,16 @@ const postApi = api.injectEndpoints({
       }),
       providesTags: ["Post"],
     }),
+    createPost: builder.mutation({
+      query: (body: CreatePostType) => ({
+        url: `/posts`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Post"],
+    }),
   }),
 });
 
-export const { useGetAllPostQuery, useGetPostQuery } = postApi;
+export const { useGetAllPostQuery, useGetPostQuery, useCreatePostMutation } =
+  postApi;

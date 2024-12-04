@@ -1,3 +1,4 @@
+import { CreateMediaType } from "types/media.type";
 import { api } from "..";
 
 const postApi = api.injectEndpoints({
@@ -10,10 +11,10 @@ const postApi = api.injectEndpoints({
       providesTags: ["Media"],
     }),
     createMedia: builder.mutation({
-      query: ({ media }) => ({
+      query: (body: FormData) => ({
         url: `/media`,
         method: "POST",
-        body: media,
+        body,
       }),
       invalidatesTags: ["Media"],
     }),

@@ -65,13 +65,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
             className="p-1 rounded-full bg-white bg-opacity-50 custom-prev absolute left-2 top-1/2 transform -translate-y-1/2 z-50 cursor-pointer"
             onClick={() => swiperRef.current?.swiper.slidePrev()}
           >
-            <IconArrowBadgeLeftFilled className="bg-opacity-100" />
+            <IconArrowBadgeLeftFilled />
           </div>
           <div
             className="p-1 rounded-full bg-white bg-opacity-50 custom-next absolute right-2 top-1/2 transform -translate-y-1/2 z-50 cursor-pointer"
             onClick={() => swiperRef.current?.swiper.slideNext()}
           >
-            <IconArrowBadgeRightFilled className="bg-opacity-100" />
+            <IconArrowBadgeRightFilled />
           </div>
         </>
       )}
