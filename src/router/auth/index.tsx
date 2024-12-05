@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import { AuthLayout } from "layouts";
-import { SignIn, SignUp } from "pages";
+import { GoogleCallback, GitHubCallback, SignIn, SignUp } from "pages";
 
 const AuthRoutes: RouteObject[] = [
   {
@@ -14,6 +14,14 @@ const AuthRoutes: RouteObject[] = [
       {
         path: "sign-up",
         element: <SignUp />,
+      },
+      {
+        path: "github/callback",
+        element: <GitHubCallback />,
+      },
+      {
+        path: "google/callback",
+        element: <GoogleCallback />,
       },
     ],
   },

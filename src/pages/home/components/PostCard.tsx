@@ -4,7 +4,7 @@ import {
   IconThumbUp,
   IconThumbUpFilled,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   useCreateCommentMutation,
   useLazyGetCommentByIdQuery,
@@ -15,21 +15,35 @@ import { PostCardType } from "types/PostCard.type";
 import CommentCard from "./CommentCard";
 import { useGetMediaByPostIdQuery } from "store/api/endpoints/media";
 import ImageSlider from "./ImageSlider";
-import { useNavigate } from "react-router-dom";
+import {
+  useCreateLikeMutation,
+  useDeleteLikeMutation,
+  useGetIsLikedByPostIdQuery,
+  useGetLikeByPostIdQuery,
+} from "store/api/endpoints/like";
+import SkeletonImage from "./SkeletonImage";
+import SkeletonComment from "./SkeletonComment";
+
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
-  const likes = 1;
-  const pageSize = 4;
-  const page = 1;
+  const pageSize = 8;
   const postId = id;
+
+  const [page, setPage] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(likes);
+  const [likeCount, setLikeCount] = useState(0);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [isCommentCreated, setIsCommentCreated] = useState(false);
+  const [comments, setComments] = useState<CommentType[]>([]);
 
   const { data: userData } = useGetUserByIdQuery(user_id);
-  const { data: mediaData } = useGetMediaByPostIdQuery(id);
-  console.log("mediaData?.data:", mediaData?.data);
+  const { data: mediaData, isLoading: mediaIsLoanding } =
+    useGetMediaByPostIdQuery(postId);
+  const { data: likeData } = useGetLikeByPostIdQuery(postId);
+  const { data: isLikedData } = useGetIsLikedByPostIdQuery(postId);
   const [CreateComment] = useCreateCommentMutation();
+  const [createLike] = useCreateLikeMutation();
+  const [deleteLike] = useDeleteLikeMutation();
   const [fetchComments, { data: commentsData, isLoading: isFetching }] =
     useLazyGetCommentByIdQuery();
 
@@ -46,16 +60,31 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     e.preventDefault();
     try {
       await CreateComment({ postId, comment: formData });
+      setIsCommentCreated(true);
       setFormData({ content: "" });
+      for (let i = 1; i <= page; i++) {
+        await fetchComments({ postId, page: i, page_size: pageSize });
+      }
     } catch (error: any) {
       alert("Login failed. Please check your credentials.");
       console.error("Sign In Error:", error);
     }
   };
 
-  const toggleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const toggleLike = async () => {
+    try {
+      if (isLiked) {
+        await deleteLike({ postId }).unwrap();
+        setIsLiked(false);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await createLike({ postId }).unwrap();
+        setIsLiked(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+    }
   };
 
   const toggleComments = () => {
@@ -66,11 +95,45 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
     }
   };
 
-  const navigate = useNavigate();
+  // Load next page of comments when "See More" is clicked
+  const loadMoreComments = useCallback(() => {
+    if (
+      commentsData &&
+      !isFetching &&
+      page < commentsData?.data.meta.last_page
+    ) {
+      setPage((prevPage) => {
+        const newPage = prevPage + 1;
+        fetchComments({ postId, page: newPage, page_size: pageSize });
+        return newPage;
+      });
+    }
+  }, [commentsData, isFetching, page, fetchComments, postId]);
 
-  const handleNavigateToProfile = () => {
-    navigate(`/profile/${user_id}`);
-  };
+  useEffect(() => {
+    if (!isCommentCreated && commentsData && commentsData.data.data) {
+      setComments((prevComments) => [
+        ...prevComments,
+        ...commentsData.data.data,
+      ]);
+    }
+    if (isCommentCreated && commentsData && commentsData.data.data) {
+      setComments(() => [...commentsData.data.data]);
+      setIsCommentCreated(false);
+    }
+  }, [commentsData]);
+
+  useEffect(() => {
+    if (likeData) {
+      setLikeCount(likeData?.data.count); // Khởi tạo likeCount
+    }
+  }, [likeData]);
+
+  useEffect(() => {
+    if (isLikedData) {
+      setIsLiked(isLikedData?.data.isLiked);
+    }
+  }, [isLikedData]);
 
   return (
     <div className="bg-white border rounded-lg shadow-sm mb-4 max-w-xl mx-auto py-2">
@@ -94,7 +157,8 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       <div className="px-4 py-2 text-sm">{content}</div>
 
       {/* Post Image */}
-      <ImageSlider mediaData={mediaData?.data || []} />
+      {!mediaIsLoanding && <ImageSlider mediaData={mediaData?.data || []} />}
+      {mediaIsLoanding && <SkeletonImage />}
 
       {/* Action Buttons */}
       <div className="flex items-center justify-between px-4 py-2">
@@ -119,9 +183,29 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       {/* Comments Section */}
       {isCommentOpen && (
         <div className="mt-3 px-4 rounded-lg">
-          {commentsData?.data.map((comment: any, index: any) => (
-            <CommentCard key={comment.id} {...comment}></CommentCard>
-          ))}
+          <div className="overflow-y-auto max-h-[400px]">
+            {!isFetching &&
+              comments.map((comment: any, index: any) => (
+                <CommentCard key={comment.id} {...comment}></CommentCard>
+              ))}
+
+            {isFetching && (
+              <>
+                <SkeletonComment />
+                <SkeletonComment />
+              </>
+            )}
+
+            {/* See More Comments Button */}
+            {commentsData && page < commentsData?.data.meta.last_page && (
+              <button
+                onClick={loadMoreComments}
+                className="mt-4 text-blue-500 hover:underline"
+              >
+                See More Comments
+              </button>
+            )}
+          </div>
 
           <form className="flex items-center mt-2" onSubmit={handleSubmit}>
             <input

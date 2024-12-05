@@ -51,7 +51,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
               <img
                 src={media.file_url}
                 alt={`media-${media.id}`}
-                className="slider-image object-contain max-h-full max-w-full  rounded-md"
+                className="slider-image w-full h-full object-cover rounded-md"
                 onLoad={() => setImagesLoaded((prev) => prev + 1)}
               />
             </div>
@@ -65,13 +65,13 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
             className="p-1 rounded-full bg-white bg-opacity-50 custom-prev absolute left-2 top-1/2 transform -translate-y-1/2 z-50 cursor-pointer"
             onClick={() => swiperRef.current?.swiper.slidePrev()}
           >
-            <IconArrowBadgeLeftFilled className="bg-opacity-100" />
+            <IconArrowBadgeLeftFilled />
           </div>
           <div
             className="p-1 rounded-full bg-white bg-opacity-50 custom-next absolute right-2 top-1/2 transform -translate-y-1/2 z-50 cursor-pointer"
             onClick={() => swiperRef.current?.swiper.slideNext()}
           >
-            <IconArrowBadgeRightFilled className="bg-opacity-100" />
+            <IconArrowBadgeRightFilled />
           </div>
         </>
       )}
