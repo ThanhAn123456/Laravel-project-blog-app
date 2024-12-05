@@ -30,7 +30,14 @@ const followApi = api.injectEndpoints({
         }),
         providesTags: ["Follow"],
     }),
+    isFollowing: builder.query({
+      query: (userId) => ({
+      url: `isFollowing/${userId}`,
+      method: "GET",
+      }),
+      providesTags: ["Follow"],
+  }),
   }),
 });
 
-export const { useGetFollowersQuery, useGetFollowingQuery, useGetFollowersCountQuery, useGetFollowingCountQuery } = followApi;
+export const { useGetFollowersQuery, useGetFollowingQuery, useGetFollowersCountQuery, useGetFollowingCountQuery, useIsFollowingQuery } = followApi;

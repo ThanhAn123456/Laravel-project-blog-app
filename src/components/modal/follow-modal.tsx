@@ -1,13 +1,14 @@
 import { IconSearch, IconX } from "@tabler/icons-react";
 import UserItem from "components/user/user-item";
 import { useState } from "react";
+import { useIsFollowingQuery } from "../../store/api/endpoints/follow";
 
 interface User {
   avatar: string;
   name: string;
-  followed_id: string;
+  user_id: number;
   email: string;
-  role_id: string;
+  role_id: number;
 }
 
 interface FollowModalProps {
@@ -15,6 +16,8 @@ interface FollowModalProps {
   onClose: () => void;
   list: User[];
   type: "followers" | "following";
+  // followingIds: number[];
+  // onToggleFollow: (userId: number, isFollowing: boolean) => void;
 }
 
 const FollowModal: React.FC<FollowModalProps> = ({
@@ -22,6 +25,8 @@ const FollowModal: React.FC<FollowModalProps> = ({
   onClose,
   list,
   type,
+  // followingIds,
+  // onToggleFollow,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -32,6 +37,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
     }
   };
 
+  // Lọc danh sách người dùng theo từ khóa tìm kiếm
   const filteredList = list.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -46,7 +52,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
       <div className="bg-white rounded-lg max-w-sm w-full relative h-[420px]">
         <div className="flex items-center flex-grow justify-center mb-4 pt-4">
           <h2 className="text-base text-center font-bold">
-            {type === "followers" ? "Theo dõi" : "Đang theo dõi"}
+            {type === "followers" ? "Người theo dõi" : "Đang theo dõi"}
           </h2>
           <button
             onClick={onClose}
@@ -56,7 +62,8 @@ const FollowModal: React.FC<FollowModalProps> = ({
           </button>
         </div>
 
-        <div className="flex items-center rounded-lg mx-4 mb-4 bg-[#EFEFEF] ">
+        {/* Ô tìm kiếm */}
+        <div className="flex items-center rounded-lg mx-4 mb-4 bg-[#EFEFEF]">
           {!searchQuery && !isFocused && (
             <div className="pl-2">
               <IconSearch
@@ -76,31 +83,26 @@ const FollowModal: React.FC<FollowModalProps> = ({
             className="w-full p-2 text-sm text-gray-700 bg-[#EFEFEF] rounded-lg focus:outline-none focus:ring-2 focus:ring-transparent"
           />
         </div>
+
+        {/* Danh sách người dùng */}
         <div className="overflow-y-auto max-h-96">
           <ul>
-            {filteredList.map((user, index) => (
-              <li key={index} className="">
-                {type === "followers" ? (
-                  <UserItem
-                    avatarUrl={user.avatar}
-                    username={user.name}
-                    type="followers"
-                    onToggleFollow={() => {
-                      // Thêm logic toggle follow ở đây
-                    }}
-                  />
-                ) : (
-                  <UserItem
-                    avatarUrl={user.avatar}
-                    username={user.name}
-                    type="following"
-                    onToggleFollow={() => {
-                      // Thêm logic toggle follow ở đây
-                    }}
-                  />
-                )}
-              </li>
-            ))}
+            {type === "following"
+              ? filteredList.map((user) => {
+                  return (
+                    <li key={user.user_id}>
+                      <UserItem user={user} type={type} userId={user.user_id} />
+                    </li>
+                  );
+                })
+              : filteredList.map((user) => {
+                  console.log("UDEDDD", user);
+                  return (
+                    <li key={user.user_id}>
+                      <UserItem user={user} type={type} userId={user.user_id} />
+                    </li>
+                  );
+                })}
           </ul>
         </div>
       </div>
