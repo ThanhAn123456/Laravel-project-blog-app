@@ -4,7 +4,7 @@ import { CreatePostType } from "types/post.type";
 const postApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAllPost: builder.query({
-      query: (page = 1) => ({
+      query: (page: number) => ({
         url: `/posts`,
         method: "GET",
         params: {
@@ -31,5 +31,9 @@ const postApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetAllPostQuery, useGetPostQuery, useCreatePostMutation } =
-  postApi;
+export const {
+  useGetAllPostQuery,
+  useGetPostQuery,
+  useCreatePostMutation,
+  useLazyGetAllPostQuery,
+} = postApi;

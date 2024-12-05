@@ -81,7 +81,7 @@ const SignIn = () => {
     if (isSuccess && data.status === 200) {
       dispatch(
         saveUserInfo({
-          access_token: data?.data?.token,
+          access_token: data?.data?.access_token,
         })
       );
       navigate("/");

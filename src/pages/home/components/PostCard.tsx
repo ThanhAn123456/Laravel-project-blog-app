@@ -21,6 +21,8 @@ import {
   useGetIsLikedByPostIdQuery,
   useGetLikeByPostIdQuery,
 } from "store/api/endpoints/like";
+import SkeletonImage from "./SkeletonImage";
+import SkeletonComment from "./SkeletonComment";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const pageSize = 8;
@@ -34,7 +36,8 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const [comments, setComments] = useState<CommentType[]>([]);
 
   const { data: userData } = useGetUserByIdQuery(user_id);
-  const { data: mediaData } = useGetMediaByPostIdQuery(postId);
+  const { data: mediaData, isLoading: mediaIsLoanding } =
+    useGetMediaByPostIdQuery(postId);
   const { data: likeData } = useGetLikeByPostIdQuery(postId);
   const { data: isLikedData } = useGetIsLikedByPostIdQuery(postId);
   const [CreateComment] = useCreateCommentMutation();
@@ -150,7 +153,8 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       <div className="px-4 py-2 text-sm">{content}</div>
 
       {/* Post Image */}
-      <ImageSlider mediaData={mediaData?.data || []} />
+      {!mediaIsLoanding && <ImageSlider mediaData={mediaData?.data || []} />}
+      {mediaIsLoanding && <SkeletonImage />}
 
       {/* Action Buttons */}
       <div className="flex items-center justify-between px-4 py-2">
@@ -176,9 +180,17 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
       {isCommentOpen && (
         <div className="mt-3 px-4 rounded-lg">
           <div className="overflow-y-auto max-h-[400px]">
-            {comments.map((comment: any, index: any) => (
-              <CommentCard key={comment.id} {...comment}></CommentCard>
-            ))}
+            {!isFetching &&
+              comments.map((comment: any, index: any) => (
+                <CommentCard key={comment.id} {...comment}></CommentCard>
+              ))}
+
+            {isFetching && (
+              <>
+                <SkeletonComment />
+                <SkeletonComment />
+              </>
+            )}
 
             {/* See More Comments Button */}
             {commentsData && page < commentsData?.data.meta.last_page && (
