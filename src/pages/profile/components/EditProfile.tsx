@@ -5,7 +5,7 @@ import defaultAvatar from "../../../assets/images/default_avatar.jpg";
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
-  const [updateUser] = useUpdateUserMutation({});
+  const [updateUser] = useUpdateUserMutation(); // Sử dụng custom hook của bạn
 
   const [username, setUsername] = useState<string>("");
   const [avatar, setAvatar] = useState<string | null>(defaultAvatar);
@@ -20,31 +20,27 @@ const EditProfile: React.FC = () => {
     if (fileInputRef.current?.files?.[0]) {
       formData.append("avatar", fileInputRef.current.files[0]);
     }
-
     formData.forEach((value, key) => {
-      console.log(key, value);
+      console.log(key, value); // In từng cặp khóa và giá trị
     });
-
     try {
-      await updateUser(formData).unwrap();
-      navigate("/profile");
+      // Gửi PUT request tới API
+      const response = await updateUser(formData).unwrap(); // .unwrap() để xử lý kết quả trả về
+      console.log("Respone", response);
+      if (response.status === 200) {
+        navigate("/profile"); // Điều hướng tới trang profile khi cập nhật thành công
+      } else {
+        console.error("Cập nhật thất bại:", response.message);
+      }
     } catch (error) {
-      console.error("Cập nhật thất bại:", error);
+      console.error("Lỗi khi cập nhật:", error);
     }
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Vui lòng chọn file ảnh hợp lệ!");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatar(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  // Xử lý thay đổi ảnh
+  const handleAvatarChange = () => {
+    if (fileInputRef.current?.files?.[0]) {
+      setAvatar(URL.createObjectURL(fileInputRef.current.files[0]));
     }
   };
 

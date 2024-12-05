@@ -23,7 +23,7 @@ import {
 } from "store/api/endpoints/like";
 import SkeletonImage from "./SkeletonImage";
 import SkeletonComment from "./SkeletonComment";
-
+import { useNavigate } from "react-router-dom";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const pageSize = 8;
@@ -54,6 +54,11 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
+  };
+  // thiện code
+  const navigate = useNavigate();
+  const handleNavigateToProfile = () => {
+    navigate(`/profile/${user_id}`);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

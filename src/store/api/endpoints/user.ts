@@ -17,10 +17,10 @@ const userApi = api.injectEndpoints({
       providesTags: ["User"],
     }),
     updateUser: builder.mutation({
-      query: (formData) => ({
-        url: "user",
-        method: "PUT",
-        body: formData,
+      query: (body : FormData) => ({
+        url: "user/?_method=PUT",
+        method: "POST",
+        body,
       }),
       invalidatesTags: ["User"], 
     }),
