@@ -16,14 +16,15 @@ const userApi = api.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
-    updateUser: builder.query({
-      query: () => ({
+    updateUser: builder.mutation({
+      query: (formData) => ({
         url: "user",
         method: "PUT",
+        body: formData,
       }),
-      providesTags: ["User"],
-    })
+      invalidatesTags: ["User"], 
+    }),
   }),
 });
 
-export const { useGetUserQuery, useGetUserByIdQuery, useUpdateUserQuery } = userApi;
+export const { useGetUserQuery, useGetUserByIdQuery, useUpdateUserMutation } = userApi;
