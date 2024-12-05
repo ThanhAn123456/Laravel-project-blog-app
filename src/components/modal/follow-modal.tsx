@@ -16,6 +16,7 @@ interface FollowModalProps {
   onClose: () => void;
   list: User[];
   type: "followers" | "following";
+  currentUserId: number;
   // followingIds: number[];
   // onToggleFollow: (userId: number, isFollowing: boolean) => void;
 }
@@ -25,6 +26,8 @@ const FollowModal: React.FC<FollowModalProps> = ({
   onClose,
   list,
   type,
+  currentUserId,
+
   // followingIds,
   // onToggleFollow,
 }) => {
@@ -85,26 +88,37 @@ const FollowModal: React.FC<FollowModalProps> = ({
         </div>
 
         {/* Danh sách người dùng */}
-        <div className="overflow-y-auto max-h-96">
-          <ul>
-            {type === "following"
-              ? filteredList.map((user) => {
-                  return (
-                    <li key={user.user_id}>
-                      <UserItem user={user} type={type} userId={user.user_id} />
-                    </li>
-                  );
-                })
-              : filteredList.map((user) => {
-                  console.log("UDEDDD", user);
-                  return (
-                    <li key={user.user_id}>
-                      <UserItem user={user} type={type} userId={user.user_id} />
-                    </li>
-                  );
-                })}
-          </ul>
-        </div>
+        {filteredList && filteredList.length > 0 && (
+          <div className="overflow-y-auto max-h-96">
+            <ul>
+              {type === "following"
+                ? filteredList.map((user) => {
+                    if (user.user_id === currentUserId) return null;
+                    return (
+                      <li key={user.user_id}>
+                        <UserItem
+                          user={user}
+                          type={type}
+                          userId={user.user_id}
+                        />
+                      </li>
+                    );
+                  })
+                : filteredList.map((user) => {
+                    if (user.user_id === currentUserId) return null;
+                    return (
+                      <li key={user.user_id}>
+                        <UserItem
+                          user={user}
+                          type={type}
+                          userId={user.user_id}
+                        />
+                      </li>
+                    );
+                  })}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

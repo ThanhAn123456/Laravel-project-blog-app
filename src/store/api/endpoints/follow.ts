@@ -36,8 +36,22 @@ const followApi = api.injectEndpoints({
       method: "GET",
       }),
       providesTags: ["Follow"],
-  }),
+    }),
+    follow: builder.mutation({
+      query: (userId) => ({
+        url: `follow/${userId}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Follow"], 
+    }),
+    unfollow: builder.mutation({
+      query: (userId) => ({
+        url: `unfollow/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Follow"], 
+    }),
   }),
 });
 
-export const { useGetFollowersQuery, useGetFollowingQuery, useGetFollowersCountQuery, useGetFollowingCountQuery, useIsFollowingQuery } = followApi;
+export const { useGetFollowersQuery, useGetFollowingQuery, useGetFollowersCountQuery, useGetFollowingCountQuery, useIsFollowingQuery, useFollowMutation, useUnfollowMutation } = followApi;

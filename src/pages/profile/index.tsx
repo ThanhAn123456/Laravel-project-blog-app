@@ -1,8 +1,8 @@
-import defaultAvatar from "../../assets/images/default_avatar.jpg";
-import { IconLayoutGrid } from "@tabler/icons-react";
-import { FollowModal } from "components";
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { IconLayoutGrid } from "@tabler/icons-react";
+import defaultAvatar from "../../assets/images/default_avatar.jpg";
+import { FollowModal } from "components";
 
 import {
   useGetFollowersQuery,
@@ -10,6 +10,8 @@ import {
   useGetFollowersCountQuery,
   useGetFollowingCountQuery,
   useIsFollowingQuery,
+  useFollowMutation,
+  useUnfollowMutation,
 } from "../../store/api/endpoints/follow";
 
 import {
@@ -39,12 +41,11 @@ const Profile: React.FC = () => {
   const [isFollowersOpen, setIsFollowersOpen] = useState(false);
   const [isFollowingOpen, setIsFollowingOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts">("posts");
-  const [followingIds, setFollowingIds] = useState<number[]>([]);
-
   const { userId: paramUserId } = useParams<{ userId: string }>();
+
+  // Current user data
   const { data: currentUser = { data: {} } } = useGetUserQuery({});
   const currentUserId = currentUser.data?.id;
-
   const userId =
     paramUserId && paramUserId !== String(currentUserId)
       ? paramUserId
@@ -52,90 +53,54 @@ const Profile: React.FC = () => {
 
   const isOwnProfile = userId === String(currentUserId);
 
+  // Fetch user details
   const { data: user = { data: {} }, isLoading: isUserLoading } =
     useGetUserByIdQuery(userId);
 
-  // Kiểm tra trạng thái follow
-  const { data: isFollowingData, isLoading: isCheckingFollowing } =
-    useIsFollowingQuery(userId, { skip: isOwnProfile });
-  console.log("isFollowingData", isFollowingData);
+  // Follow state
+  const { data: isFollowingData } = useIsFollowingQuery(userId, {
+    skip: isOwnProfile,
+  });
+  const [isFollowing, setIsFollowing] = useState(
+    isFollowingData?.data.isFollowing || false
+  );
 
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
-  console.log("isFollowing", isFollowing);
-
-  // Cập nhật trạng thái follow khi dữ liệu thay đổi
   useEffect(() => {
-    if (isFollowingData) {
-      setIsFollowing(isFollowingData.data.isFollowing);
-    }
+    if (isFollowingData) setIsFollowing(isFollowingData.data.isFollowing);
   }, [isFollowingData]);
 
-  const {
-    data: followersCountData = { data: { count: 0 } },
-    isLoading: isFollowersCountLoading,
-  } = useGetFollowersCountQuery(userId);
+  const [follow] = useFollowMutation();
+  const [unfollow] = useUnfollowMutation();
 
-  const {
-    data: followingCountData = { data: { count: 0 } },
-    isLoading: isFollowingCountLoading,
-  } = useGetFollowingCountQuery(userId);
+  const handleFollow = async () => {
+    try {
+      if (isFollowing) await unfollow(userId);
+      else await follow(userId);
+    } catch (error) {
+      console.error("Failed to update follow status:", error);
+    }
+  };
 
-  const {
-    data: followersList = { data: [] },
-    isLoading: isFollowersListLoading,
-    isSuccess: isFollowersListSuccess,
-  } = useGetFollowersQuery(userId);
+  // Fetch counts and lists
+  const { data: followersCountData = { data: { count: 0 } } } =
+    useGetFollowersCountQuery(userId);
+  const { data: followingCountData = { data: { count: 0 } } } =
+    useGetFollowingCountQuery(userId);
+  const { data: followersList = { data: [] } } = useGetFollowersQuery(userId);
+  const { data: followingList = { data: [] } } = useGetFollowingQuery(userId);
 
-  const {
-    data: followingList = { data: [] },
-    isLoading: isFollowingListLoading,
-    isSuccess: isFollowingListSuccess,
-  } = useGetFollowingQuery(userId);
-
-  const {
-    data: postCountData = { data: { count: 0 } },
-    isLoading: isPostCountLoading,
-  } = useGetPostCountByUserIdQuery(userId);
-
-  const { data: postList = { data: [] }, isLoading: isPostListLoading } =
-    useGetPostByUserIdQuery(userId);
+  const { data: postCountData = { data: { count: 0 } } } =
+    useGetPostCountByUserIdQuery(userId);
+  const { data: postList = { data: [] } } = useGetPostByUserIdQuery(userId);
 
   const userData = isOwnProfile ? currentUser.data : user.data;
-
-  // Tạo danh sách postId
   const postIdList = useMemo(
     () => (postList?.data ?? []).map((post: Post) => post.id),
     [postList]
   );
 
-  if (
-    isFollowersCountLoading ||
-    isFollowingCountLoading ||
-    isPostCountLoading
-  ) {
-    return <div>Loading...</div>;
-  }
-
   const toggleFollowersModal = () => setIsFollowersOpen((prev) => !prev);
   const toggleFollowingModal = () => setIsFollowingOpen((prev) => !prev);
-
-  // const handleToggleFollow = (userId: number, isFollowing: boolean) => {
-  //   if (isFollowing) {
-  //     // Nếu đang theo dõi, xóa khỏi danh sách
-  //     setFollowingIds((prev) => prev.filter((id) => id !== userId));
-  //   } else {
-  //     // Nếu chưa theo dõi, thêm vào danh sách
-  //     setFollowingIds((prev) => [...prev, userId]);
-  //   }
-  // };
-
-  const handleEditProfile = () => {
-    // Xử lý chỉnh sửa trang cá nhân
-  };
-
-  const handleFollow = () => {
-    // Xử lý theo dõi người khác
-  };
 
   return (
     <div className="max-w-[975px] w-full mx-auto px-5 py-8">
@@ -165,12 +130,12 @@ const Profile: React.FC = () => {
             {isOwnProfile ? (
               <>
                 <div className="px-2">
-                  <a
-                    href=""
+                  <Link
+                    to={"/profile/edit"}
                     className="block px-4 py-1 text-sm font-semibold text-[black] bg-[rgba(219,219,219,0.8)] rounded hover:bg-[rgba(219,219,219)]"
                   >
                     Chỉnh sửa trang cá nhân
-                  </a>
+                  </Link>
                 </div>
                 <div>
                   <a
@@ -189,14 +154,24 @@ const Profile: React.FC = () => {
                     ? "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
                     : "bg-blue-500 text-white hover:bg-blue-600"
                 }`}
-                disabled={isCheckingFollowing}
               >
-                {isCheckingFollowing
-                  ? "Đang tải..."
-                  : isFollowing
-                  ? "Đang theo dõi"
-                  : "Theo dõi"}
+                {isFollowing ? "Đang theo dõi" : "Theo dõi"}
               </button>
+              // <button
+              //   onClick={handleFollow}
+              //   className={`px-4 py-1 text-sm font-semibold rounded ${
+              //     isFollowing
+              //       ? "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
+              //       : "bg-blue-500 text-white hover:bg-blue-600"
+              //   }`}
+              //   disabled={isCheckingFollowing}
+              // >
+              //   {isCheckingFollowing
+              //     ? "Đang tải..."
+              //     : isFollowing
+              //     ? "Đang theo dõi"
+              //     : "Theo dõi"}
+              // </button>
             )}
           </div>
           <div className="mt-1 text-black text-base flex gap-x-6">
@@ -221,18 +196,17 @@ const Profile: React.FC = () => {
           <FollowModal
             isOpen={isFollowersOpen}
             onClose={toggleFollowersModal}
-            list={followersList.data} // Dữ liệu người theo dõi
+            list={followersList.data}
             type="followers"
-            // followingIds={followingIds}
-            // onToggleFollow={handleToggleFollow} // Callback toggle
+            currentUserId={currentUserId}
           />
 
-          {/* Modal danh sách following */}
           <FollowModal
             isOpen={isFollowingOpen}
             onClose={toggleFollowingModal}
-            list={followingList.data} // Dữ liệu người đang theo dõi
+            list={followingList.data}
             type="following"
+            currentUserId={currentUserId}
           />
         </div>
       </div>

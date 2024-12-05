@@ -1,5 +1,9 @@
 import defaultAvatar from "../../assets/images/default_avatar.jpg";
-import { useIsFollowingQuery } from "../../store/api/endpoints/follow";
+import {
+  useIsFollowingQuery,
+  useFollowMutation,
+  useUnfollowMutation,
+} from "../../store/api/endpoints/follow";
 
 interface User {
   user_id: number;
@@ -11,18 +15,25 @@ interface UserItemProps {
   user: User;
   userId: number;
   type: "followers" | "following";
-  // isFollowing: boolean;
-  // onToggleFollow: () => void;
 }
 
-const UserItem: React.FC<UserItemProps> = ({
-  user,
-  type,
-  userId,
-  // onToggleFollow,
-}) => {
-  const { data: isFollowing } = useIsFollowingQuery(user.user_id);
-  console.log("isFollowing userid: " + user.user_id, isFollowing);
+const UserItem: React.FC<UserItemProps> = ({ user, type, userId }) => {
+  const { data: isFollowing, isLoading } = useIsFollowingQuery(user.user_id);
+  // console.log("isFollowing userid: " + user.user_id, isFollowing);
+  const [follow] = useFollowMutation();
+  const [unfollow] = useUnfollowMutation();
+
+  const handleFollowClick = async () => {
+    try {
+      if (isFollowing?.data.isFollowing) {
+        await unfollow(user.user_id);
+      } else {
+        await follow(user.user_id);
+      }
+    } catch (error) {
+      console.error("Failed to update follow status:", error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between px-4 py-2 bg-white hover:shadow-lg transition-shadow duration-300">
@@ -38,25 +49,18 @@ const UserItem: React.FC<UserItemProps> = ({
           </span>
         </div>
       </div>
-      {type === "following" ? (
-        <button
-          // onClick={onToggleFollow}
-          className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors duration-300 ${"bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"}`}
-        >
-          Đang theo dõi
-        </button>
-      ) : (
-        <button
-          // onClick={onToggleFollow}
-          className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors duration-300 ${
-            isFollowing === true
-              ? "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
-              : "bg-[#0095f6] text-white hover:bg-blue-600"
-          }`}
-        >
-          {isFollowing === true ? "Đang theo dõi" : "Theo dõi"}
-        </button>
-      )}
+
+      <button
+        onClick={handleFollowClick}
+        className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors duration-300 ${
+          isFollowing?.data.isFollowing
+            ? "bg-[rgba(239,239,239)] text-black hover:bg-[rgba(0,0,0,0.1)]"
+            : "bg-[#0095f6] text-white hover:bg-blue-600"
+        }`}
+        disabled={isLoading}
+      >
+        {isFollowing?.data.isFollowing ? "Đang theo dõi" : "Theo dõi"}
+      </button>
     </div>
   );
 };
