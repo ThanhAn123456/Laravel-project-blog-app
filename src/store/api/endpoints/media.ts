@@ -1,7 +1,7 @@
 import { CreateMediaType } from "types/media.type";
 import { api } from "..";
 
-const postApi = api.injectEndpoints({
+const mediaApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMediaByPostId: builder.query({
       query: (postId) => ({
@@ -21,4 +21,4 @@ const postApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetMediaByPostIdQuery, useCreateMediaMutation } = postApi;
+export const { useGetMediaByPostIdQuery, useCreateMediaMutation } = mediaApi;

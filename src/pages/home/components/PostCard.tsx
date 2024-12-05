@@ -24,6 +24,7 @@ import {
 import SkeletonImage from "./SkeletonImage";
 import SkeletonComment from "./SkeletonComment";
 
+
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   const pageSize = 8;
   const postId = id;
@@ -137,7 +138,10 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
   return (
     <div className="bg-white border rounded-lg shadow-sm mb-4 max-w-xl mx-auto py-2">
       {/* Header */}
-      <div className="flex items-center px-4 py-3">
+      <div
+        className="flex items-center px-4 py-3 cursor-pointer"
+        onClick={handleNavigateToProfile}
+      >
         <img
           src={userData?.data.avatar}
           alt="avatar"

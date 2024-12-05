@@ -1,25 +1,30 @@
 import { api } from "..";
 
-const postApi = api.injectEndpoints({
+const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query({
-      query: (page = 1) => ({
-        url: `/user`,
+      query: () => ({
+        url: "/user",
         method: "GET",
-        params: {
-          page: page,
-        },
       }),
-      providesTags: ["Post"],
+      providesTags: ["User"],
     }),
     getUserById: builder.query({
       query: (userId) => ({
-        url: `/user/${userId}`,
+        url: `user/${userId}`,
         method: "GET",
       }),
-      providesTags: ["Post"],
+      providesTags: ["User"],
+    }),
+    updateUser: builder.mutation({
+      query: (formData) => ({
+        url: "user",
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: ["User"], 
     }),
   }),
 });
 
-export const { useGetUserQuery, useGetUserByIdQuery } = postApi;
+export const { useGetUserQuery, useGetUserByIdQuery, useUpdateUserMutation } = userApi;

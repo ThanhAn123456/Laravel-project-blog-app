@@ -33,6 +33,8 @@ const SignUp = () => {
 
     try {
       await signUp(formData);
+      console.log('form data', formData);
+      
     } catch (error) {
       alert("Sign In Error.");
       console.error("Sign In Error:", error);
@@ -42,8 +44,10 @@ const SignUp = () => {
   useEffect(() => {
     if (!data) return; // Bỏ qua nếu không có dữ liệu
 
+    console.log('data', data);
     // Lưu thông tin người dùng nếu thành công
     if (isSuccess && data.status === 201) {
+      console.log('IsSuccess', isSuccess);
       navigate("/auth/sign-in");
     }
 

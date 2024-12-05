@@ -20,6 +20,20 @@ const postApi = api.injectEndpoints({
       }),
       providesTags: ["Post"],
     }),
+    getPostByUserId: builder.query({
+      query: (userId) => ({
+        url: `/posts/user/${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["Post"],
+    }),
+    getPostCountByUserId: builder.query({
+      query: (userId) => ({
+        url: `/posts/user/${userId}/count`,
+        method: "GET",
+      }),
+      providesTags: ["Post"],
+    }),
     createPost: builder.mutation({
       query: (body: CreatePostType) => ({
         url: `/posts`,
@@ -31,9 +45,4 @@ const postApi = api.injectEndpoints({
   }),
 });
 
-export const {
-  useGetAllPostQuery,
-  useGetPostQuery,
-  useCreatePostMutation,
-  useLazyGetAllPostQuery,
-} = postApi;
+export const { useGetAllPostQuery, useGetPostQuery, useGetPostByUserIdQuery, useGetPostCountByUserIdQuery, useCreatePostMutation, useLazyGetAllPostQuery } = postApi;

@@ -5,7 +5,7 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://127.0.0.1:8000/api",
     prepareHeaders: (headers, { getState }) => {
-      const state: any = getState(); // Lấy toàn bộ state từ Redux store
+      const state: any = getState();
       const accessToken = state.auth.access_token;
 
       // headers.set("Content-Type", "application/json");
@@ -17,9 +17,11 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Comment", "Post", "User", "Media", "Like"],
+  tagTypes: ["Comment", "Post", "User", "Media", "Follow", "Like"],
   endpoints: () => ({}),
 });
+
+
 
 // import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 // import { token } from "../../store/slice/auth";

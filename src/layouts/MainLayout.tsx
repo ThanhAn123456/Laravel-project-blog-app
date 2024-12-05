@@ -9,7 +9,9 @@ const MainLayout: React.FC = () => {
   return (
     <AuthGuard>
       <div className="flex">
-        <div className=" hidden lg:block">{<SideBar />}</div>
+        <div className=" hidden lg:block">
+          <SideBar />
+        </div>
         <main
           className={
             " w-full lg:px-5 px-2 " + (isSideBarOpen ? "lg:ms-60" : "lg:ms-14")
@@ -21,6 +23,7 @@ const MainLayout: React.FC = () => {
           </div>
         </main>
       </div>
+      //{" "}
     </AuthGuard>
   );
 };
