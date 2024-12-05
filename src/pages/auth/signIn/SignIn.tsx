@@ -1,14 +1,25 @@
-import { IconBrandGoogleFilled } from "@tabler/icons-react";
+import {
+  IconBrandGithubFilled,
+  IconBrandGoogleFilled,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSignInMutation } from "store/api/endpoints/auth";
+import {
+  useLazySignInByGitHubQuery,
+  useLazySignInByGoogleQuery,
+  useSignInByGitHubQuery,
+  useSignInByGoogleQuery,
+} from "store/api/endpoints/OAuth2";
 import { saveUserInfo } from "store/slice/auth";
 import { SignInType } from "types/auth.type";
 
 const SignIn = () => {
   const [signIn, { data, isLoading, isSuccess }] = useSignInMutation();
+  const [signInByGoogle] = useLazySignInByGoogleQuery({});
+  const [signInByGitHub] = useLazySignInByGitHubQuery({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignInType>({
@@ -31,6 +42,36 @@ const SignIn = () => {
     }
   };
 
+  const handleGitHubClick = async () => {
+    try {
+      const response = await signInByGitHub({}).unwrap();
+      console.log("response", response);
+      if (response.status === 200) {
+        window.location.href = response.data.redirect_url; // Redirect đến GitHub
+      } else {
+        toast.error("Failed to generate GitHub redirect URL.");
+      }
+    } catch (error: any) {
+      alert("Login failed. Please check your credentials.");
+      console.error("Sign In Error:", error);
+    }
+  };
+
+  const handleGoogleClick = async () => {
+    try {
+      const response = await signInByGoogle({}).unwrap();
+      console.log("response", response);
+      if (response.status === 200) {
+        window.location.href = response.data.redirect_url; // Redirect đến GitHub
+      } else {
+        toast.error("Failed to generate GitHub redirect URL.");
+      }
+    } catch (error: any) {
+      alert("Login failed. Please check your credentials.");
+      console.error("Sign In Error:", error);
+    }
+  };
+
   useEffect(() => {
     if (!data) return; // Bỏ qua nếu không có dữ liệu
 
@@ -40,7 +81,7 @@ const SignIn = () => {
     if (isSuccess && data.status === 200) {
       dispatch(
         saveUserInfo({
-          access_token: data?.data?.access_token,
+          access_token: data?.data?.token,
         })
       );
       navigate("/");
@@ -58,12 +99,18 @@ const SignIn = () => {
       <div className="bg-white w-[30%] h-auto p-10 gap-3 flex flex-col  items-center rounded-lg drop-shadow-xl">
         <h1 className="font-bold text-4xl mb-3">Welcome Back!</h1>
         <div className="w-full h-12 flex justify-between items-center gap-3">
-          <button className="bg-[#316BFF] hover:bg-blue-700 w-full h-full flex justify-center items-center gap-2 text-white font-bold py-1 px-4 rounded-lg">
+          <button
+            onClick={handleGoogleClick}
+            className="bg-[#316BFF] hover:bg-blue-700 w-full h-full flex justify-center items-center gap-2 text-white font-bold py-1 px-4 rounded-lg"
+          >
             <IconBrandGoogleFilled></IconBrandGoogleFilled>
             <p>Sign in with Google</p>
           </button>
-          <button className="bg-[#323439] hover:bg-[#18191c] w-[60px] h-full text-3xl text-white font-bold py-1 px-4 rounded-lg">
-            f
+          <button
+            onClick={handleGitHubClick}
+            className="bg-[#323439] hover:bg-[#18191c] w-[60px] h-full text-3xl text-white font-bold py-1 px-4 rounded-lg"
+          >
+            <IconBrandGithubFilled></IconBrandGithubFilled>
           </button>
         </div>
         <p className="text-[#84878B]">------ or continue with ------</p>

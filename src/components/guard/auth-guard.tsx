@@ -16,7 +16,11 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
 
   // Checking Authentication
   const checkAuth = () => {
-    if (!isAuth) {
+    if (
+      !isAuth &&
+      location.pathname !== "/auth/github/callback" &&
+      location.pathname !== "/auth/google/callback"
+    ) {
       navigate("/auth/sign-in");
       dispatch(removeUserInfo());
     } else {
