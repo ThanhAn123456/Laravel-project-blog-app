@@ -53,7 +53,7 @@ const EditProfile: React.FC = () => {
           <img
             src={avatar || defaultAvatar}
             alt="Avatar Preview"
-            className="w-[100px] h-[100px] rounded-full"
+            className="w-[100px] h-[100px] rounded-full object-cover"
           />
           <button
             type="button"

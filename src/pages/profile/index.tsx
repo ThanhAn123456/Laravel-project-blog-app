@@ -119,7 +119,7 @@ const Profile: React.FC = () => {
           <img
             src={userData?.avatar || defaultAvatar}
             alt={userData?.username || "Avatar"}
-            className="w-[150px] h-[150px] rounded-full"
+            className="w-[150px] h-[150px] rounded-full object-cover"
           />
         </div>
         <div className="flex flex-col flex-grow justify-start gap-y-6">

@@ -2,6 +2,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import React from "react";
 import { useGetUserByIdQuery } from "store/api/endpoints/user";
 import { CommentCardType } from "types/comment.type";
+import defaultAvatar from "../../../assets/images/default_avatar.jpg";
 
 const CommentCard: React.FC<CommentCardType> = ({
   user_id,
@@ -18,7 +19,7 @@ const CommentCard: React.FC<CommentCardType> = ({
   return (
     <div className="flex items-start mb-3">
       <img
-        src={userData?.data.avatar}
+        src={userData?.data.avatar || defaultAvatar}
         alt="commenter-avatar"
         className="w-8 h-8 rounded-full object-cover mr-3"
       />
