@@ -23,6 +23,7 @@ import {
 } from "store/api/endpoints/like";
 import SkeletonImage from "./SkeletonImage";
 import SkeletonComment from "./SkeletonComment";
+import defaultAvatar from "../../../assets/images/default_avatar.jpg";
 import { useNavigate } from "react-router-dom";
 
 const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
@@ -148,7 +149,7 @@ const PostCard: React.FC<PostCardType> = ({ id, user_id, title, content }) => {
         onClick={handleNavigateToProfile}
       >
         <img
-          src={userData?.data.avatar}
+          src={userData?.data.avatar || defaultAvatar}
           alt="avatar"
           className="w-10 h-10 rounded-full object-cover mr-3"
         />
