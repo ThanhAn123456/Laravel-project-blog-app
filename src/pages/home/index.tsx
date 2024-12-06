@@ -62,7 +62,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen py-6">
+    <div className="min-h-screen py-6">
       <div className="container mx-auto">
         {/* Hiển thị bài viết */}
         {posts.map((post: PostCardType) => (

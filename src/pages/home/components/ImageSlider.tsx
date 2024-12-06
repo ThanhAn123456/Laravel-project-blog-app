@@ -14,6 +14,7 @@ interface ImageSliderProps {
 }
 
 const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
   const swiperRef = useRef<any>(null);
   const [maxHeight, setMaxHeight] = useState<number>(0);
   const [imagesLoaded, setImagesLoaded] = useState<number>(0); // Track loaded images
@@ -24,7 +25,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
     // Calculate max height once all images are loaded
     if (imagesLoaded === mediaData.length) {
       const imageHeights = Array.from(
-        document.querySelectorAll(".slider-image")
+        sliderContainerRef.current?.querySelectorAll(".slider-image") || []
       ).map((img) => (img as HTMLImageElement).height || 0);
 
       setMaxHeight(Math.max(...imageHeights));
@@ -51,7 +52,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
               <img
                 src={media.file_url}
                 alt={`media-${media.id}`}
-                className="slider-image w-full h-full object-cover rounded-md"
+                className="slider-image w-full h-full object-cover rounded-md max-h-[672px]"
                 onLoad={() => setImagesLoaded((prev) => prev + 1)}
               />
             </div>
