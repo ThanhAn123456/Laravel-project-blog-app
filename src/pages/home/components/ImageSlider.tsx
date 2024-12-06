@@ -28,14 +28,20 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
         sliderContainerRef.current?.querySelectorAll(".slider-image") || []
       ).map((img) => (img as HTMLImageElement).height || 0);
 
-      setMaxHeight(Math.max(...imageHeights));
+      const calculatedMaxHeight =
+        imageHeights.length > 0 ? Math.max(...imageHeights) : 0;
+
+      setMaxHeight(calculatedMaxHeight);
     }
   }, [imagesLoaded, mediaData]);
 
   if (!mediaData || mediaData.length === 0) return null;
 
   return (
-    <div className="rounded-md overflow-hidden relative">
+    <div
+      className="rounded-md overflow-hidden relative"
+      ref={sliderContainerRef} // Attach the ref to the container
+    >
       <Swiper
         ref={swiperRef} // Attach the swiper instance to the ref
         pagination={{ clickable: true }}
@@ -52,7 +58,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ mediaData }) => {
               <img
                 src={media.file_url}
                 alt={`media-${media.id}`}
-                className="slider-image w-full h-full object-cover rounded-md max-h-[672px]"
+                className="slider-image w-full h-full object-cover rounded-md"
                 onLoad={() => setImagesLoaded((prev) => prev + 1)}
               />
             </div>
