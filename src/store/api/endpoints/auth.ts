@@ -1,5 +1,9 @@
 import { api } from "..";
-import { SignInType } from "types/auth.type";
+import {
+  ForgotPasswordType,
+  ResetPasswordType,
+  SignInType,
+} from "types/auth.type";
 import { SignUpType } from "types/auth.type";
 
 const authEndPoint = api.injectEndpoints({
@@ -18,7 +22,26 @@ const authEndPoint = api.injectEndpoints({
         body,
       }),
     }),
+    forgotPassword: builder.mutation({
+      query: (body: ForgotPasswordType) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body,
+      }),
+    }),
+    resetPassword: builder.mutation({
+      query: (body: ResetPasswordType) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useSignInMutation, useSignUpMutation } = authEndPoint;
+export const {
+  useSignInMutation,
+  useSignUpMutation,
+  useResetPasswordMutation,
+  useForgotPasswordMutation,
+} = authEndPoint;

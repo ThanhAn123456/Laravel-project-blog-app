@@ -149,12 +149,12 @@ const SignIn = () => {
               required
             />
           </div>
-          <a
-            href="#"
+          <Link
+            to="/auth/forgot-password"
             className="block text-blue-600 hover:underline mb-3 text-right"
           >
             Forgot your password?
-          </a>
+          </Link>
           <button
             type="submit"
             className="bg-[#316BFF] hover:bg-blue-700 w-full text-white font-bold py-3 px-4 border rounded-lg"
